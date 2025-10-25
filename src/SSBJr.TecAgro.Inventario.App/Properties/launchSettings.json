@@ -3,6 +3,25 @@
     "Windows Machine": {
       "commandName": "Project",
       "nativeDebugging": false
+    },
+    "Android Emulator": {
+      "commandName": "Project",
+      "nativeDebugging": false,
+      "commandLineArgs": "--api-url http://10.0.2.2:5000"
+    },
+    "Android Emulator (Docker)": {
+      "commandName": "Project",
+      "nativeDebugging": false,
+      "commandLineArgs": "--api-url http://10.0.2.2:5000",
+      "dockerComposeFile": "../../../docker-compose.debug.yml",
+      "dockerComposeAction": "StartDebugging"
+    },
+    "Windows Machine (Docker)": {
+      "commandName": "Project",
+      "nativeDebugging": false,
+      "commandLineArgs": "--api-url http://localhost:5000",
+      "dockerComposeFile": "../../../docker-compose.debug.yml",
+      "dockerComposeAction": "StartDebugging"
     }
   }
 }

@@ -1,0 +1,35 @@
+version: '3.8'
+
+# Docker Compose para Desenvolvimento Local
+# Este arquivo e otimizado para desenvolvimento com hot reload
+
+services:
+  # Banco de Dados SQL Server
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: tecagro-dev-db
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Dev@2025!Pass
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - sql-dev-data:/var/opt/mssql
+    networks:
+      - dev-network
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "Dev@2025!Pass" -Q "SELECT 1" -C || exit 1
+   interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+
+volumes:
+  sql-dev-data:
+    driver: local
+
+networks:
+  dev-network:
+    driver: bridge

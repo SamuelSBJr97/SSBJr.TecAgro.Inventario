@@ -1,0 +1,13 @@
+{
+  "version": "1.0",
+  "compose": {
+    "includeComposeFiles": [
+      "docker-compose.yml",
+      "docker-compose.debug.yml",
+      "docker-compose.override.yml"
+    ]
+  },
+  "orchestrator": {
+    "type": "docker-compose"
+  }
+}

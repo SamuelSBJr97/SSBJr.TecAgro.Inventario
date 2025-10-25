@@ -1,0 +1,47 @@
+# Dockerfile para Build do App MAUI Android
+# Este dockerfile e usado para criar o APK do aplicativo
+
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+WORKDIR /src
+
+# Instalar dependencias do Android
+RUN apt-get update && \
+    apt-get install -y openjdk-17-jdk wget unzip && \
+    rm -rf /var/lib/apt/lists/*
+
+# Instalar Android SDK
+ENV ANDROID_SDK_ROOT=/opt/android-sdk
+ENV PATH=$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools
+
+RUN mkdir -p $ANDROID_SDK_ROOT/cmdline-tools && \
+    cd $ANDROID_SDK_ROOT/cmdline-tools && \
+    wget https://dl.google.com/android/repository/commandlinetools-linux-9477386_latest.zip && \
+    unzip commandlinetools-linux-9477386_latest.zip && \
+    mv cmdline-tools latest && \
+    rm commandlinetools-linux-9477386_latest.zip
+
+# Aceitar licencas do Android SDK
+RUN yes | sdkmanager --licenses && \
+    sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.0"
+
+# Instalar MAUI workload
+RUN dotnet workload install maui
+
+# Copiar arquivos do projeto
+COPY ["src/SSBJr.TecAgro.Inventario.App/SSBJr.TecAgro.Inventario.App.csproj", "SSBJr.TecAgro.Inventario.App/"]
+COPY ["src/SSBJr.TecAgro.Inventario.Domain/SSBJr.TecAgro.Inventario.Domain.csproj", "SSBJr.TecAgro.Inventario.Domain/"]
+COPY ["src/SSBJr.TecAgro.Inventario.Infrastructure/SSBJr.TecAgro.Inventario.Infrastructure.csproj", "SSBJr.TecAgro.Inventario.Infrastructure/"]
+
+# Restaurar dependencias
+RUN dotnet restore "SSBJr.TecAgro.Inventario.App/SSBJr.TecAgro.Inventario.App.csproj"
+
+# Copiar codigo fonte
+COPY src/ .
+
+# Build do APK Android
+WORKDIR "/src/SSBJr.TecAgro.Inventario.App"
+RUN dotnet publish -f net9.0-android -c Release -o /app/publish
+
+# Stage final - apenas para extrair o APK
+FROM scratch AS export
+COPY --from=build /app/publish/*.apk /

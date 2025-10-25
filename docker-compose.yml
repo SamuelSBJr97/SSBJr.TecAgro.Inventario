@@ -3,46 +3,68 @@ version: '3.8'
 services:
   # Banco de Dados SQL Server
   db:
-    image: mcr.microsoft.com/mssql/server:2022-latest
-    container_name: inventario-db
-  environment:
+  image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: tecagro-inventario-db
+    environment:
       - ACCEPT_EULA=Y
- - SA_PASSWORD=Your_password123
-      - MSSQL_PID=Express
+   - SA_PASSWORD=TecAgro@2025!Strong
+  - MSSQL_PID=Developer
     ports:
-      - "1433:1433"
-    volumes:
+  - "1433:1433"
+  volumes:
   - sql-data:/var/opt/mssql
+      - ./docker/sql-init:/docker-entrypoint-initdb.d
     networks:
-      - inventario-network
+    - inventario-network
     healthcheck:
-      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "Your_password123" -Q "SELECT 1" -C || exit 1
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "TecAgro@2025!Strong" -Q "SELECT 1" -C || exit 1
       interval: 10s
       timeout: 3s
       retries: 10
-      start_period: 10s
+ start_period: 10s
+    restart: unless-stopped
 
   # API Backend
   api:
     build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: inventario-api
+  context: .
+      dockerfile: Dockerfile.api
+    container_name: tecagro-inventario-api
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-   - ASPNETCORE_URLS=http://+:8080
- - ConnectionStrings__DefaultConnection=Server=db;Database=InventarioDb;User Id=sa;Password=Your_password123;TrustServerCertificate=True;
-      - Jwt__Secret=SSBJr_TecAgro_Inventario_Secret_Key_2025_MinLength32Chars_ForProduction_ChangeThis
+      - ASPNETCORE_ENVIRONMENT=Development
+ - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Server=db;Database=InventarioDb;User Id=sa;Password=TecAgro@2025!Strong;TrustServerCertificate=True;
+   - Jwt__Secret=SSBJr_TecAgro_Inventario_Secret_Key_2025_MinLength32Chars
       - Storage__Path=/app/storage
       - ServerUrl=http://api:8080
     ports:
-      - "5000:8080"
+   - "5000:8080"
     volumes:
       - api-storage:/app/storage
       - api-logs:/app/logs
     depends_on:
-  db:
-        condition: service_healthy
+ db:
+      condition: service_healthy
+    networks:
+      - inventario-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/swagger/index.html"]
+      interval: 30s
+    timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+
+  # Nginx Reverse Proxy (opcional)
+  nginx:
+ image: nginx:alpine
+    container_name: tecagro-inventario-nginx
+    ports:
+      - "80:80"
+    volumes:
+    - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - api
     networks:
       - inventario-network
     restart: unless-stopped

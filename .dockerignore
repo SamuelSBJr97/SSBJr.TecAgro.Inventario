@@ -1,0 +1,48 @@
+# Diretórios de build
+**/bin/
+**/obj/
+**/out/
+**/.vs/
+**/.vscode/
+
+# Arquivos de usuario
+**/*.user
+**/*.suo
+**/*.userosscache
+
+# Arquivos de teste
+**/TestResults/
+**/*.trx
+
+# Logs
+**/*.log
+**/logs/
+
+# Node modules
+**/node_modules/
+
+# Arquivos do MAUI (nao necessarios para API)
+**/SSBJr.TecAgro.Inventario.App/
+
+# Arquivos de teste
+**/tests/
+
+# Git
+**/.git/
+**/.gitignore
+**/.gitattributes
+
+# Docker
+**/docker-compose*.yml
+**/Dockerfile*
+**/.dockerignore
+
+# Documentacao
+**/*.md
+**/docs/
+
+# Outros
+**/.DS_Store
+**/thumbs.db
+**/*.tmp
+**/*.swp
