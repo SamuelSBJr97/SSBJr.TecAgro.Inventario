@@ -22,7 +22,7 @@
      <ShellContent
     Title="Configuracoes"
             Icon="dotnet_bot.png"
-     ContentTemplate="{DataTemplate ContentPage}"
+     ContentTemplate="{DataTemplate views:ConfiguracoesPage}"
     Route="configuracoes" />
     </TabBar>
 

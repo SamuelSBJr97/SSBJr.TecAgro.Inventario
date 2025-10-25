@@ -94,26 +94,28 @@ c.SwaggerDoc("v1", new()
     using (var scope = app.Services.CreateScope())
     {
         var db = scope.ServiceProvider.GetRequiredService<InventarioDbContext>();
-        db.Database.Migrate();
-
- // Seed usuário padrão se não existir
+   
+        // Criar banco e tabelas se não existirem (temporário para desenvolvimento)
+        db.Database.EnsureCreated();
+        
+  // Seed usuário padrão se não existir
         var userRepo = scope.ServiceProvider.GetRequiredService<IUsuarioRepository>();
         var authService = scope.ServiceProvider.GetRequiredService<IAutenticacaoService>();
         
         var adminUser = await userRepo.GetByLoginAsync("admin");
         if (adminUser == null)
         {
-        await userRepo.AddAsync(new SSBJr.TecAgro.Inventario.Domain.Entities.Usuario
-          {
-    Id = Guid.NewGuid(),
-      Login = "admin",
-   Nome = "Administrador",
-                Email = "admin@tecagro.com",
- SenhaHash = authService.GerarHashSenha("admin123"),
-                DataCriacao = DateTime.UtcNow,
-                Ativo = true
-});
-          Log.Information("Usuário admin criado com sucesso");
+await userRepo.AddAsync(new SSBJr.TecAgro.Inventario.Domain.Entities.Usuario
+ {
+          Id = Guid.NewGuid(),
+          Login = "admin",
+                Nome = "Administrador",
+  Email = "admin@tecagro.com",
+          SenhaHash = authService.GerarHashSenha("admin123"),
+          DataCriacao = DateTime.UtcNow,
+      Ativo = true
+            });
+    Log.Information("Usuário admin criado com sucesso");
         }
     }
 
