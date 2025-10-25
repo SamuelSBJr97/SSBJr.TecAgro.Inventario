@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+       xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+  xmlns:vm="clr-namespace:SSBJr.TecAgro.Inventario.App.ViewModels"
+             x:Class="SSBJr.TecAgro.Inventario.App.Views.ProdutoDetailPage"
+    x:DataType="vm:ProdutoDetailViewModel"
+       Title="{Binding Title}">
+
+    <ScrollView>
+   <VerticalStackLayout Padding="20" Spacing="15">
+            
+  <Entry Placeholder="Nome *" Text="{Binding Produto.Nome}"/>
+            
+   <Editor Placeholder="Descricao" Text="{Binding Produto.Descricao}" HeightRequest="100"/>
+            
+ <Entry Placeholder="Codigo Fiscal" Text="{Binding Produto.CodigoFiscal}"/>
+     
+    <Entry Placeholder="SKU" Text="{Binding Produto.SKU}"/>
+            
+       <Picker Title="Categoria" ItemsSource="{Binding Categorias}" 
+     SelectedItem="{Binding Produto.Categoria}"/>
+      
+   <Entry Placeholder="Quantidade" Text="{Binding Produto.QuantidadeEstoque}" Keyboard="Numeric"/>
+  
+   <Picker Title="Unidade de Medida" ItemsSource="{Binding UnidadesMedida}"
+  SelectedItem="{Binding Produto.UnidadeMedida}"/>
+            
+  <Entry Placeholder="Valor de Aquisicao" Text="{Binding Produto.ValorAquisicao}" Keyboard="Numeric"/>
+            
+      <Entry Placeholder="Valor de Revenda" Text="{Binding Produto.ValorRevenda}" Keyboard="Numeric"/>
+            
+ <Entry Placeholder="Localizacao" Text="{Binding Produto.Localizacao}"/>
+
+            <HorizontalStackLayout Spacing="10">
+         <Button Text="Salvar" Command="{Binding SaveCommand}" HorizontalOptions="FillAndExpand"/>
+   <Button Text="Cancelar" Command="{Binding CancelCommand}" HorizontalOptions="FillAndExpand"/>
+            </HorizontalStackLayout>
+   </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

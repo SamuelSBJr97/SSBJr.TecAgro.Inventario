@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+        xmlns:vm="clr-namespace:SSBJr.TecAgro.Inventario.App.ViewModels"
+   x:Class="SSBJr.TecAgro.Inventario.App.Views.ProdutosPage"
+   x:DataType="vm:ProdutosViewModel"
+     Title="{Binding Title}">
+
+    <Grid RowDefinitions="Auto,Auto,*,Auto" Padding="10">
+    
+        <!-- Header com informacoes -->
+     <Grid Grid.Row="0" ColumnDefinitions="*,*,*" Margin="0,0,0,10">
+            <Frame Grid.Column="0" Padding="10" CornerRadius="8" BackgroundColor="{StaticResource Primary}">
+                <StackLayout>
+       <Label Text="Total" FontSize="12" TextColor="White" HorizontalOptions="Center"/>
+           <Label Text="{Binding TotalProdutos}" FontSize="20" FontAttributes="Bold" 
+    TextColor="White" HorizontalOptions="Center"/>
+    </StackLayout>
+     </Frame>
+      
+            <Frame Grid.Column="1" Padding="10" CornerRadius="8" BackgroundColor="{StaticResource Secondary}" Margin="5,0">
+      <StackLayout>
+        <Label Text="Pendentes" FontSize="12" TextColor="White" HorizontalOptions="Center"/>
+             <Label Text="{Binding ProdutosPendentes}" FontSize="20" FontAttributes="Bold" 
+  TextColor="White" HorizontalOptions="Center"/>
+      </StackLayout>
+  </Frame>
+    
+            <Frame Grid.Column="2" Padding="10" CornerRadius="8">
+          <StackLayout>
+           <Label Text="Status" FontSize="12" HorizontalOptions="Center"/>
+        <Label Text="{Binding IsOnline, Converter={StaticResource BoolToOnlineConverter}}" 
+  FontSize="16" FontAttributes="Bold" HorizontalOptions="Center"/>
+     </StackLayout>
+            </Frame>
+        </Grid>
+
+        <!-- Barra de pesquisa -->
+     <Grid Grid.Row="1" ColumnDefinitions="*,Auto" Margin="0,0,0,10">
+            <SearchBar Grid.Column="0" 
+  Placeholder="Pesquisar produtos..."
+         Text="{Binding SearchText}"
+   SearchCommand="{Binding SearchCommand}"/>
+            <Button Grid.Column="1" 
+   Text="+" 
+                  FontSize="24"
+            WidthRequest="50"
+   Margin="5,0,0,0"
+           Command="{Binding NovoProdutoCommand}"/>
+        </Grid>
+
+        <!-- Lista de produtos -->
+        <RefreshView Grid.Row="2" 
+     IsRefreshing="{Binding IsRefreshing}"
+       Command="{Binding LoadProdutosCommand}">
+            <CollectionView ItemsSource="{Binding Produtos}"
+    SelectionMode="None">
+      <CollectionView.EmptyView>
+          <StackLayout Padding="50" VerticalOptions="Center">
+  <Label Text="Nenhum produto encontrado"
+                    FontSize="18"
+              TextColor="Gray"
+       HorizontalOptions="Center"/>
+        </StackLayout>
+  </CollectionView.EmptyView>
+    
+       <CollectionView.ItemTemplate>
+        <DataTemplate>
+       <SwipeView>
+               <SwipeView.RightItems>
+     <SwipeItems>
+     <SwipeItem Text="Deletar"
+             BackgroundColor="Red"
+             Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProdutosViewModel}}, Path=DeletarProdutoCommand}"
+              CommandParameter="{Binding .}"/>
+        </SwipeItems>
+      </SwipeView.RightItems>
+        
+    <Frame Margin="5" Padding="10" CornerRadius="8">
+              <Frame.GestureRecognizers>
+           <TapGestureRecognizer 
+         Command="{Binding Source={RelativeSource AncestorType={x:Type vm:ProdutosViewModel}}, Path=EditarProdutoCommand}"
+        CommandParameter="{Binding .}"/>
+</Frame.GestureRecognizers>
+     
+  <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto">
+              <Label Grid.Row="0" Grid.Column="0" 
+          Text="{Binding Nome}" 
+       FontSize="16" 
+            FontAttributes="Bold"/>
+        
+  <Label Grid.Row="1" Grid.Column="0" 
+    Text="{Binding Categoria}" 
+      FontSize="12" 
+    TextColor="Gray"/>
+        
+          <HorizontalStackLayout Grid.Row="2" Grid.Column="0" Spacing="10">
+         <Label Text="{Binding QuantidadeEstoque, StringFormat='{0:N2}'}" 
+   FontSize="14"/>
+         <Label Text="{Binding UnidadeMedida}" 
+            FontSize="14"/>
+         <Label Text="-" 
+      FontSize="14"/>
+  <Label Text="{Binding ValorRevenda, StringFormat='R$ {0:N2}'}" 
+     FontSize="14" 
+   FontAttributes="Bold"/>
+ </HorizontalStackLayout>
+    
+             <Frame Grid.Row="0" Grid.RowSpan="3" Grid.Column="1" 
+     Padding="8" 
+        CornerRadius="15" 
+          VerticalOptions="Center"
+         BackgroundColor="{Binding StatusSincronizacao, Converter={StaticResource StatusToColorConverter}}">
+        <Label Text="{Binding StatusSincronizacao, Converter={StaticResource StatusToTextConverter}}" 
+     FontSize="10" 
+     TextColor="White"/>
+    </Frame>
+               </Grid>
+        </Frame>
+         </SwipeView>
+         </DataTemplate>
+       </CollectionView.ItemTemplate>
+     </CollectionView>
+        </RefreshView>
+
+        <!-- Botao de sincronizacao -->
+        <Button Grid.Row="3" 
+                Text="Sincronizar Pendentes"
+           Command="{Binding SincronizarCommand}"
+IsEnabled="{Binding IsOnline}"
+  Margin="0,10,0,0"/>
+    </Grid>
+</ContentPage>

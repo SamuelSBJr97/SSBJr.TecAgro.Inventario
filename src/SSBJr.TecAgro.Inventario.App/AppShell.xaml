@@ -3,12 +3,27 @@
     x:Class="SSBJr.TecAgro.Inventario.App.AppShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-    xmlns:local="clr-namespace:SSBJr.TecAgro.Inventario.App"
-    Title="SSBJr.TecAgro.Inventario.App">
+    xmlns:views="clr-namespace:SSBJr.TecAgro.Inventario.App.Views"
+    Title="TecAgro Inventario">
 
-    <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
+    <TabBar>
+ <ShellContent
+  Title="Produtos"
+            Icon="dotnet_bot.png"
+            ContentTemplate="{DataTemplate views:ProdutosPage}"
+     Route="produtos" />
+
+        <ShellContent
+     Title="Relatorios"
+          Icon="dotnet_bot.png"
+          ContentTemplate="{DataTemplate ContentPage}"
+            Route="relatorios" />
+
+     <ShellContent
+    Title="Configuracoes"
+            Icon="dotnet_bot.png"
+     ContentTemplate="{DataTemplate ContentPage}"
+    Route="configuracoes" />
+    </TabBar>
 
 </Shell>
