@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # Banco de Dados SQL Server
+  db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: inventario-db
+  environment:
+      - ACCEPT_EULA=Y
+ - SA_PASSWORD=Your_password123
+      - MSSQL_PID=Express
+    ports:
+      - "1433:1433"
+    volumes:
+  - sql-data:/var/opt/mssql
+    networks:
+      - inventario-network
+    healthcheck:
+      test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U sa -P "Your_password123" -Q "SELECT 1" -C || exit 1
+      interval: 10s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  # API Backend
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: inventario-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+   - ASPNETCORE_URLS=http://+:8080
+ - ConnectionStrings__DefaultConnection=Server=db;Database=InventarioDb;User Id=sa;Password=Your_password123;TrustServerCertificate=True;
+      - Jwt__Secret=SSBJr_TecAgro_Inventario_Secret_Key_2025_MinLength32Chars_ForProduction_ChangeThis
+      - Storage__Path=/app/storage
+      - ServerUrl=http://api:8080
+    ports:
+      - "5000:8080"
+    volumes:
+      - api-storage:/app/storage
+      - api-logs:/app/logs
+    depends_on:
+  db:
+        condition: service_healthy
+    networks:
+      - inventario-network
+    restart: unless-stopped
+
+volumes:
+  sql-data:
+    driver: local
+  api-storage:
+    driver: local
+  api-logs:
+    driver: local
+
+networks:
+  inventario-network:
+    driver: bridge
